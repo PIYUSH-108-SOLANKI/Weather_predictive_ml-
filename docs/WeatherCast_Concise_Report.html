@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>WeatherCast — ML Case Study 75 Final Report</title>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 16mm 18mm 16mm;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #2d3748;
+    line-height: 1.5;
+    font-size: 13px;
+    background: #fff;
+    margin: 0;
+    padding: 0;
+  }
+  .header {
+    text-align: center;
+    border-bottom: 2px solid #3182ce;
+    padding-bottom: 12px;
+    margin-bottom: 18px;
+  }
+  h1 {
+    color: #1a365d;
+    font-size: 22px;
+    margin: 0 0 6px 0;
+  }
+  .subtitle {
+    color: #4a5568;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .links-box {
+    background: #ebf8ff;
+    border: 1px solid #bee3f8;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+  }
+  .links-box table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .links-box td {
+    padding: 4px 6px;
+    font-size: 12.5px;
+  }
+  .links-box td strong {
+    color: #2b6cb0;
+  }
+  a {
+    color: #2b6cb0;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  h2 {
+    color: #2b6cb0;
+    font-size: 15px;
+    border-left: 4px solid #3182ce;
+    padding-left: 8px;
+    margin: 16px 0 8px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  p {
+    margin: 0 0 8px 0;
+    text-align: justify;
+  }
+  table.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 12px;
+  }
+  table.data-table th, table.data-table td {
+    border: 1px solid #cbd5e0;
+    padding: 6px 8px;
+    text-align: center;
+  }
+  table.data-table th {
+    background: #edf2f7;
+    color: #2d3748;
+    font-weight: 700;
+  }
+  table.data-table tr.champion {
+    background: #f0fff4;
+    font-weight: bold;
+    color: #22543d;
+  }
+  .summary-box {
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-family: monospace;
+    font-size: 11px;
+    white-space: pre-wrap;
+    margin-top: 10px;
+  }
+  .footer {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 10.5px;
+    color: #a0aec0;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 8px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>WeatherCast 🌦️: Next-Day Rain Prediction for Maharashtra</h1>
+  <div class="subtitle">Machine Learning Case Study 75 — Final Academic Project Report & Viva Deliverable</div>
+  <div style="font-size: 11.5px; color: #718096; margin-top: 4px;">B.Tech Semester V | Supervised Binary Classification | 25-Year ECMWF ERA5 Dataset</div>
+</div>
+
+<div class="links-box">
+  <table>
+    <tr>
+      <td style="width: 32%;"><strong>🌐 Live Deployed Application:</strong></td>
+      <td><a href="https://weatherpredictiveml-git-geavtut3pfyypewaut2she.streamlit.app/" target="_blank">https://weatherpredictiveml-git-geavtut3pfyypewaut2she.streamlit.app/</a></td>
+    </tr>
+    <tr>
+      <td><strong>💻 GitHub Code Repository:</strong></td>
+      <td><a href="https://github.com/PIYUSH-108-SOLANKI/Weather_predictive_ml-" target="_blank">https://github.com/PIYUSH-108-SOLANKI/Weather_predictive_ml-</a></td>
+    </tr>
+    <tr>
+      <td><strong>📦 Model Artifact:</strong></td>
+      <td><code>models/best_model_phase6.joblib</code> (Tuned Gradient Boosting Classifier)</td>
+    </tr>
+  </table>
+</div>
+
+<h2>1. Problem Definition & Formulation</h2>
+<p>
+  <strong>Assigned Case Study 75:</strong> An environmental dataset contains historical observations, and the organization wants to identify meaningful patterns or estimate a selected future measure (With Proper Justification).
+</p>
+<p>
+  <strong>Formulated Machine Learning Task:</strong> Supervised Binary Classification to predict next-day rainfall (<code>rain_tomorrow</code> ∈ {0, 1}) across 8 meteorological stations in Maharashtra's 4 diverse agro-climatic sub-divisions (Konkan, Madhya Maharashtra, Marathwada, and Vidarbha). The target is defined as <code>rain_tomorrow = 1</code> if next-day rainfall exceeds 0.0 mm (measurable rain), and <code>0</code> otherwise. This addresses vital agricultural irrigation scheduling in rainfed rural belts and urban drainage management during torrential coastal monsoons.
+</p>
+
+<h2>2. Dataset & Preprocessing Pipeline</h2>
+<p>
+  <strong>Data Source:</strong> 25 consecutive years (1 January 2000 – 31 December 2024, 73,056 records) of daily and hourly reanalysis data acquired from ECMWF ERA5 via the Open-Meteo Historical API across Mumbai, Ratnagiri, Pune, Nashik, Kolhapur, Solapur, Chhatrapati Sambhajinagar, and Nagpur. Calendar date-continuity was rigorously validated with 0 missing dates.
+</p>
+<p>
+  <strong>35-Feature Engineering Schema:</strong> Incorporates 1, 3, and 7-day temporal lags for precipitation, temperature, humidity, and barometric pressure; trailing 3-day and 7-day rolling aggregates (cumulative rainfall and running means); cyclical Fourier calendar projections (<code>month_sin/cos</code>, <code>doy_sin/cos</code>); and domain categoricals (IMD seasons, WMO codes, stations).
+</p>
+<p>
+  <strong>Chronological Validation:</strong> Data was split chronologically to strictly avoid temporal leakage: <strong>Train Set:</strong> 2000–2022 (67,208 records, 92%), <strong>Validation Set:</strong> 2023 (2,920 records, 4%), and <strong>Held-out Test Set:</strong> 2024 (2,928 records, 4%).
+</p>
+
+<h2>3. Model Experiments & Held-Out Test Set (2024) Benchmarks</h2>
+<p>
+  Three supervised algorithm families were developed and hyperparameter-tuned on the validation split, then benchmarked on the held-out 2024 test year:
+</p>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Model Architecture</th>
+      <th>Accuracy</th>
+      <th>ROC-AUC</th>
+      <th>Precision</th>
+      <th>Recall</th>
+      <th>F1-Score</th>
+      <th>Brier Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="champion">
+      <td style="text-align: left;">🏆 Gradient Boosting (Tuned - Champion)</td>
+      <td>90.62%</td>
+      <td>0.9714</td>
+      <td>87.42%</td>
+      <td>84.50%</td>
+      <td>0.8593</td>
+      <td>0.0682</td>
+    </tr>
+    <tr>
+      <td style="text-align: left;">🌲 Random Forest (Tuned)</td>
+      <td>89.28%</td>
+      <td>0.9632</td>
+      <td>85.80%</td>
+      <td>81.90%</td>
+      <td>0.8380</td>
+      <td>0.0765</td>
+    </tr>
+    <tr>
+      <td style="text-align: left;">📈 Logistic Regression (Tuned)</td>
+      <td>84.15%</td>
+      <td>0.9080</td>
+      <td>78.10%</td>
+      <td>74.30%</td>
+      <td>0.7615</td>
+      <td>0.1120</td>
+    </tr>
+    <tr>
+      <td style="text-align: left;">Baseline Gradient Boosting</td>
+      <td>90.18%</td>
+      <td>0.9667</td>
+      <td>86.90%</td>
+      <td>83.70%</td>
+      <td>0.8527</td>
+      <td>0.0715</td>
+    </tr>
+    <tr>
+      <td style="text-align: left;">Baseline Random Forest</td>
+      <td>88.75%</td>
+      <td>0.9575</td>
+      <td>85.10%</td>
+      <td>80.90%</td>
+      <td>0.8295</td>
+      <td>0.0798</td>
+    </tr>
+    <tr>
+      <td style="text-align: left;">Baseline Logistic Regression</td>
+      <td>83.92%</td>
+      <td>0.9051</td>
+      <td>77.80%</td>
+      <td>74.00%</td>
+      <td>0.7585</td>
+      <td>0.1145</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+  <strong>Champion Model Selection Justification:</strong> Tuned Gradient Boosting delivered the highest test ROC-AUC (0.9714) and F1-score (0.8593), and the lowest Brier score (0.0682, indicating superior probability calibration). Its serialized artifact size (260 KB) enables sub-millisecond cloud inferences on Streamlit Cloud.
+</p>
+
+<h2>4. Interactive Streamlit Application</h2>
+<p>
+  The cloud-hosted application is active at <a href="https://weatherpredictiveml-git-geavtut3pfyypewaut2she.streamlit.app/">https://weatherpredictiveml-git-geavtut3pfyypewaut2she.streamlit.app/</a> and provides:
+</p>
+<ul>
+  <li><strong>Live Real-Time Forecast:</strong> Queries live Open-Meteo telemetry across 8 Maharashtra stations with 7-day atmospheric trend charts (temperature swings, humidity build-up, and rainfall history) and IMD advisory warnings.</li>
+  <li><strong>What-If Scenario Simulator:</strong> Interactive offline sliders to stress-test model behavior under extreme monsoon downpours, scorching dry summers, and winter conditions.</li>
+  <li><strong>Multi-Model Comparison:</strong> Evaluates inputs across Gradient Boosting, Random Forest, and Logistic Regression side-by-side with individual probabilities and consensus agreement.</li>
+  <li><strong>Decision Threshold Slider:</strong> Customizable probability cutoff (0.10 to 0.90) demonstrating operational precision-recall trade-offs.</li>
+</ul>
+
+<h2>5. College Portal Submission Summary</h2>
+<div class="summary-box">PROJECT: WeatherCast — Next-Day Rain Prediction for Maharashtra (Case Study 75)
+STUDENT: Piyush Solanki | SEMESTER: B.Tech Sem V | SUBJECT: Machine Learning Lab
+LIVE APP URL: https://weatherpredictiveml-git-geavtut3pfyypewaut2she.streamlit.app/
+GITHUB URL: https://github.com/PIYUSH-108-SOLANKI/Weather_predictive_ml-
+MODEL: Tuned Gradient Boosting Pipeline (90.62% Test Accuracy, 0.9714 ROC-AUC, 0.8593 F1-Score)
+DATASET: 25 Years (2000–2024, 73,056 records) ECMWF ERA5 Reanalysis across 8 Maharashtra Stations.</div>
+
+<div class="footer">
+  WeatherCast 🌦️ · Machine Learning Case Study 75 · Academic Year 2024–2026
+</div>
+
+</body>
+</html>
