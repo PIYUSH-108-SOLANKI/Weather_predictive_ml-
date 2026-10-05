@@ -1,7 +1,21 @@
 # WeatherCast 🌦️
 
 > **ML Case Study 75 — Weather Pattern Analysis**  
-> Binary Classification | Maharashtra Rain Prediction
+> Supervised Binary Classification | Next-Day Rain Prediction for Maharashtra
+
+---
+
+## 🔗 Project Links & Live Deliverables
+
+| Resource | Link |
+| :--- | :--- |
+| **🌐 Live Deployed Application** | [**weatherpredictiveml-git-geavtut3pfyypewaut2she.streamlit.app**](https://weatherpredictiveml-git-geavtut3pfyypewaut2she.streamlit.app/) |
+| **💻 GitHub Source Repository** | [**github.com/PIYUSH-108-SOLANKI/Weather_predictive_ml-**](https://github.com/PIYUSH-108-SOLANKI/Weather_predictive_ml-) |
+| **🌍 Dataset Source** | [ECMWF ERA5 via Open-Meteo Historical Weather API](https://open-meteo.com/en/docs/historical-weather-api) (25 Years: 2000–2024, 73,056 records) |
+| **📄 Final Project Report (PDF)** | [WeatherCast_Concise_Report.pdf](docs/WeatherCast_Concise_Report.pdf) |
+| **📝 Final Project Report (DOCX)** | [WeatherCast_Concise_Report.docx](docs/WeatherCast_Concise_Report.docx) |
+| **📓 Extended Research Notebook** | [WeatherCast_ML.ipynb (160 cells)](notebooks/WeatherCast_ML.ipynb) |
+| **📓 Presentation Notebook** | [WeatherCast_Concise.ipynb (21 cells)](notebooks/WeatherCast_Concise.ipynb) |
 
 ---
 
