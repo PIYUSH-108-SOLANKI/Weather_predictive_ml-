@@ -1,0 +1,75 @@
+
+# ─── Python ───────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+
+# ─── Virtual Environments ─────────────────────────────────────────────────────
+venv/
+.venv/
+env/
+ENV/
+.env
+
+# ─── Jupyter Notebooks ────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ─── Datasets (raw & processed) ───────────────────────────────────────────────
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+*.csv
+*.json
+*.xlsx
+*.xls
+*.parquet
+*.feather
+*.h5
+*.hdf5
+
+# ─── Trained Model Files ──────────────────────────────────────────────────────
+# Retain tuned model pipelines for Streamlit deployment
+!models/*.joblib
+*.pkl
+*.pickle
+*.pt
+*.pth
+*.onnx
+
+# ─── Logs & Reports ───────────────────────────────────────────────────────────
+logs/
+*.log
+reports/figures/
+
+# ─── macOS ────────────────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# ─── IDEs & Editors ───────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ─── Streamlit ────────────────────────────────────────────────────────────────
+.streamlit/
+
+# ─── Miscellaneous ────────────────────────────────────────────────────────────
+*.bak
+*.tmp
+.cache/
